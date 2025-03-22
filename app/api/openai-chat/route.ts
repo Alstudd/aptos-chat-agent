@@ -1,4 +1,4 @@
-import { Aptos, AptosConfig, Ed25519PrivateKey, Network, PrivateKey, PrivateKeyVariants } from "@aptos-labs/ts-sdk"
+import { Account, Aptos, AptosConfig, Ed25519PrivateKey, Network, PrivateKey, PrivateKeyVariants } from "@aptos-labs/ts-sdk"
 import { OpenAI, ChatOpenAI } from "@langchain/openai"
 import { AIMessage, BaseMessage, ChatMessage, HumanMessage } from "@langchain/core/messages"
 import { MemorySaver } from "@langchain/langgraph"
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 	try {
 		// Initialize Aptos configuration
 		const aptosConfig = new AptosConfig({
-			network: Network.DEVNET,
+			network: Network.MAINNET,
 		})
 
 		const aptos = new Aptos(aptosConfig)
@@ -92,11 +92,11 @@ export async function POST(request: Request) {
 		}
 
 		// Setup account and signer
-		const account = await aptos.deriveAccountFromPrivateKey({
-			privateKey: new Ed25519PrivateKey(PrivateKey.formatPrivateKey(privateKeyStr, PrivateKeyVariants.Ed25519)),
-		})
+		const formattedKey = PrivateKey.formatPrivateKey(privateKeyStr, PrivateKeyVariants.Ed25519);
+		const privateKey = new Ed25519PrivateKey(formattedKey);
+		const account = Account.fromPrivateKey({ privateKey });
 
-		const signer = new LocalSigner(account, Network.DEVNET)
+		const signer = new LocalSigner(account, Network.MAINNET)
 		const aptosAgent = new AgentRuntime(signer, aptos, {
 			PANORA_API_KEY: process.env.PANORA_API_KEY,
 		})

@@ -1,4 +1,4 @@
-import { Aptos, AptosConfig, Ed25519PrivateKey, Network, PrivateKey, PrivateKeyVariants } from "@aptos-labs/ts-sdk"
+import { Account, Aptos, AptosConfig, Ed25519PrivateKey, Network, PrivateKey, PrivateKeyVariants } from "@aptos-labs/ts-sdk"
 import { ChatAnthropic } from "@langchain/anthropic"
 import { AIMessage, BaseMessage, ChatMessage, HumanMessage } from "@langchain/core/messages"
 import { MemorySaver } from "@langchain/langgraph"
@@ -86,9 +86,9 @@ export async function POST(request: Request) {
 		}
 
 		// Setup account and signer
-		const account = await aptos.deriveAccountFromPrivateKey({
-			privateKey: new Ed25519PrivateKey(PrivateKey.formatPrivateKey(privateKeyStr, PrivateKeyVariants.Ed25519)),
-		})
+		const formattedKey = PrivateKey.formatPrivateKey(privateKeyStr, PrivateKeyVariants.Ed25519);
+		const privateKey = new Ed25519PrivateKey(formattedKey);
+		const account = Account.fromPrivateKey({ privateKey });
 
 		const signer = new LocalSigner(account, Network.MAINNET)
 		const aptosAgent = new AgentRuntime(signer, aptos, {

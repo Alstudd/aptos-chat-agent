@@ -58,7 +58,7 @@ export default function Home() {
 	)
 	return (
 		<ChatWindow
-			endpoint="api/openai-chat"
+			endpoint="api/anthropic-chat"
 			emoji="🤖"
 			titleText="Aptos agent"
 			placeholder="I'm your friendly Aptos agent! Ask me anything..."
